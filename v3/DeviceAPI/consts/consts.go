@@ -34,4 +34,5 @@ const (
 /* push url */
 const (
 	PushCidURL = PushHost + VersionV3 + "/push/cid"
+	PushURL    = PushHost + VersionV3 + "push"
 )

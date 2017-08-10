@@ -3,7 +3,8 @@ package model
 //create by houjingchao on 17/08/
 //定义  请求的结构体
 type Audience struct {
-	Tag []string `json:"tag"`
+	Tag []string `json:"tag,omitempty"`
+	RegistrationId []string `json:"registration_id,omitempty"`
 }
 
 type Notification struct {
@@ -53,4 +54,14 @@ type PushRequest struct {
 	Message      Message  `json:"message,omitempty""`
 	SmsMessage   SmsMessage `json:"sms_message,omitempty""`
 	Options      Options  `json:"options,omitempty""`
+}
+
+
+
+/**
+cid 的返回结果
+ */
+
+type CidResponse struct {
+	Cidlist []string `json:"cidlist"`
 }
