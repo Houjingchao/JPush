@@ -12,16 +12,24 @@ type Notification struct {
 		Alert     string `json:"alert"`
 		Title     string `json:"title,omitempty"`
 		BuilderID int `json:"builder_id,omitempty"`
+		BigText   string `json:"big_text"`
 		Extras struct {
-			Newsid int `json:"newsid"`
+			Action  string `json:"action"`
+			Collect string `json:"collect"`
+			Func    string `json:"func"`
+			Url     string `json:"url"`
 		} `json:"extras,omitempty"`
 	} `json:"android"`
 	Ios struct {
 		Alert string `json:"alert"`
 		Sound string `json:"sound,omitempty"`
 		Badge string `json:"badge,omitempty"`
+		MutableContent string `json:"mutable-content"`
 		Extras struct {
-			Newsid int `json:"newsid"`
+			Action  string `json:"action"`
+			Collect string `json:"collect"`
+			Func    string `json:"func"`
+			Url     string `json:"url"`
 		} `json:"extras,omitempty"`
 	} `json:"ios"`
 }
@@ -31,7 +39,7 @@ type Message struct {
 	ContentType string `json:"content_type"`
 	Title       string `json:"title"`
 	Extras struct {
-		Key string `json:"key"`
+		Key map[string]string
 	} `json:"extras"`
 }
 

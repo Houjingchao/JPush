@@ -12,8 +12,8 @@ type (
 	Push interface {
 		GetCids(count string) (model.CidResponse, error)
 		PushAll() error
-		PushByRegid(registrationID string) error
-		PushByTag(tag string, context string) error
+		PushByRegid(registrationID, title, context string, extra map[string]string) error
+		PushByTag(tag, title, context string, extra map[string]string) error
 	}
 	push struct {
 		Authorization string
@@ -45,7 +45,7 @@ func (p push) PushAll() error {
 	return nil
 }
 
-func (p push) PushByRegid(registrationID, title, context string, ) error {
+func (p push) PushByRegid(registrationID, title, context string, extra map[string]string) error {
 	pushRequest := model.PushRequest{
 		Platform: "all",
 		Audience: model.Audience{
@@ -56,20 +56,43 @@ func (p push) PushByRegid(registrationID, title, context string, ) error {
 				Alert     string
 				Title     string
 				BuilderID int
-				Extras    struct{ Newsid int`json:"newsid"` }
-			}{Alert: title, Title: title },
+				BigText   string
+				Extras struct {
+					Action  string`json:"action"`;
+					Collect string`json:"collect"`;
+					Func    string`json:"func"`;
+					Url     string`json:"url"`
+				}
+			}{Alert: title, Title: title, BigText: context, Extras: struct {
+				Action  string
+				Collect string
+				Func    string
+				Url     string
+			}{Action: extra["action"], Collect: extra["collect"], Func: extra["func"], Url: extra["url"]}},
+
 			Ios: struct {
-				Alert  string
-				Sound  string
-				Badge  string
-				Extras struct{ Newsid int`json:"newsid"` }
-			}{Alert: title },
+				Alert          string
+				Sound          string
+				Badge          string
+				MutableContent string
+				Extras struct {
+					Action  string`json:"action"`;
+					Collect string`json:"collect"`;
+					Func    string`json:"func"`;
+					Url     string`json:"url"`
+				}
+			}{Alert: title, MutableContent: context, Extras: struct {
+				Action  string
+				Collect string
+				Func    string
+				Url     string
+			}{Action: extra["action"], Collect: extra["collect"], Func: extra["func"], Url: extra["url"]}},
 		},
 	}
 	return ResultSet(p.PostClient(consts.PushURL).JSON(pushRequest).Send())
 }
 
-func (p push) PushByTag(tag, title, context string) error {
+func (p push) PushByTag(tag, title, context string, extra map[string]string) error {
 	pushRequest := model.PushRequest{
 		Platform: "all",
 		Audience: model.Audience{
@@ -80,14 +103,37 @@ func (p push) PushByTag(tag, title, context string) error {
 				Alert     string
 				Title     string
 				BuilderID int
-				Extras    struct{ Newsid int`json:"newsid"` }
-			}{Alert: title, Title: title},
+				BigText   string
+				Extras struct {
+					Action  string`json:"action"`;
+					Collect string`json:"collect"`;
+					Func    string`json:"func"`;
+					Url     string`json:"url"`
+				}
+			}{Alert: title, Title: title, BigText: context, Extras: struct {
+				Action  string
+				Collect string
+				Func    string
+				Url     string
+			}{Action: extra["action"], Collect: extra["collect"], Func: extra["func"], Url: extra["url"]}},
+
 			Ios: struct {
-				Alert  string
-				Sound  string
-				Badge  string
-				Extras struct{ Newsid int`json:"newsid"` }
-			}{Alert: title },
+				Alert          string
+				Sound          string
+				Badge          string
+				MutableContent string
+				Extras struct {
+					Action  string`json:"action"`;
+					Collect string`json:"collect"`;
+					Func    string`json:"func"`;
+					Url     string`json:"url"`
+				}
+			}{Alert: title, MutableContent: context, Extras: struct {
+				Action  string
+				Collect string
+				Func    string
+				Url     string
+			}{Action: extra["action"], Collect: extra["collect"], Func: extra["func"], Url: extra["url"]}},
 		},
 	}
 	return ResultSet(p.PostClient(consts.PushURL).JSON(pushRequest).Send())
