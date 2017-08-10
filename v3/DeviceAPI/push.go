@@ -4,6 +4,8 @@ import (
 	"github.com/cocotyty/httpclient"
 	"github.com/Houjingchao/JPush/v3/DeviceAPI/consts"
 	"github.com/Houjingchao/JPush/v3/DeviceAPI/model"
+	"fmt"
+	"encoding/json"
 )
 
 //create by houjingchao on 17/08/10
@@ -12,8 +14,8 @@ type (
 	Push interface {
 		GetCids(count string) (model.CidResponse, error)
 		PushAll() error
-		PushByRegid(registrationID, title, context string, extra map[string]string) error
-		PushByTag(tag, title, context string, extra map[string]string) error
+		PushByRegid(registrationID, title, context string,extra model.Extras) error
+		PushByTag(tag, title, context string, extra model.Extras) error
 	}
 	push struct {
 		Authorization string
@@ -26,7 +28,7 @@ func NewPush(authorization string) Push {
 
 func (p push) PostClient(url string) *httpclient.HttpRequest {
 	return httpclient.Post(url).
-		Head("Authorization", p.Authorization).Head("Content-Type", "application/json")
+		Head("Authorization", p.Authorization)
 }
 
 func (p push) GetClient(url string, param string) *httpclient.HttpRequest {
@@ -45,95 +47,48 @@ func (p push) PushAll() error {
 	return nil
 }
 
-func (p push) PushByRegid(registrationID, title, context string, extra map[string]string) error {
+func (p push) PushByRegid(registrationID, title, context string, extra model.Extras) error {
 	pushRequest := model.PushRequest{
 		Platform: "all",
 		Audience: model.Audience{
 			RegistrationId: []string{registrationID},
 		},
 		Notification: model.Notification{
-			Android: struct {
-				Alert     string
-				Title     string
-				BuilderID int
-				BigText   string
-				Extras struct {
-					Action  string`json:"action"`;
-					Collect string`json:"collect"`;
-					Func    string`json:"func"`;
-					Url     string`json:"url"`
-				}
-			}{Alert: title, Title: title, BigText: context, Extras: struct {
-				Action  string
-				Collect string
-				Func    string
-				Url     string
-			}{Action: extra["action"], Collect: extra["collect"], Func: extra["func"], Url: extra["url"]}},
-
-			Ios: struct {
-				Alert          string
-				Sound          string
-				Badge          string
-				MutableContent string
-				Extras struct {
-					Action  string`json:"action"`;
-					Collect string`json:"collect"`;
-					Func    string`json:"func"`;
-					Url     string`json:"url"`
-				}
-			}{Alert: title, MutableContent: context, Extras: struct {
-				Action  string
-				Collect string
-				Func    string
-				Url     string
-			}{Action: extra["action"], Collect: extra["collect"], Func: extra["func"], Url: extra["url"]}},
+			Android: model.Android{
+				Alert:   title,
+				Title:   title,
+				BigText: context,
+				Extras:  extra,
+			},
+			Ios: model.Ios{
+				Alert:          title,
+				Extras:         extra,
+			},
 		},
 	}
+	res,_:=json.Marshal(pushRequest)
+	fmt.Println(string(res))
+	fmt.Println(consts.PushURL)
 	return ResultSet(p.PostClient(consts.PushURL).JSON(pushRequest).Send())
 }
 
-func (p push) PushByTag(tag, title, context string, extra map[string]string) error {
+func (p push) PushByTag(tag, title, context string, extra model.Extras) error {
 	pushRequest := model.PushRequest{
 		Platform: "all",
 		Audience: model.Audience{
 			Tag: []string{tag},
 		},
 		Notification: model.Notification{
-			Android: struct {
-				Alert     string
-				Title     string
-				BuilderID int
-				BigText   string
-				Extras struct {
-					Action  string`json:"action"`;
-					Collect string`json:"collect"`;
-					Func    string`json:"func"`;
-					Url     string`json:"url"`
-				}
-			}{Alert: title, Title: title, BigText: context, Extras: struct {
-				Action  string
-				Collect string
-				Func    string
-				Url     string
-			}{Action: extra["action"], Collect: extra["collect"], Func: extra["func"], Url: extra["url"]}},
-
-			Ios: struct {
-				Alert          string
-				Sound          string
-				Badge          string
-				MutableContent string
-				Extras struct {
-					Action  string`json:"action"`;
-					Collect string`json:"collect"`;
-					Func    string`json:"func"`;
-					Url     string`json:"url"`
-				}
-			}{Alert: title, MutableContent: context, Extras: struct {
-				Action  string
-				Collect string
-				Func    string
-				Url     string
-			}{Action: extra["action"], Collect: extra["collect"], Func: extra["func"], Url: extra["url"]}},
+			Android: model.Android{
+				Alert:   title,
+				Title:   title,
+				BigText: context,
+				Extras:  extra,
+			},
+			Ios: model.Ios{
+				Alert:          title,
+				Extras:         extra,
+			},
 		},
 	}
 	return ResultSet(p.PostClient(consts.PushURL).JSON(pushRequest).Send())
