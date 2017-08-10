@@ -45,21 +45,49 @@ func (p push) PushAll() error {
 	return nil
 }
 
-func (p push) PushByRegid(registrationID string) error {
+func (p push) PushByRegid(registrationID, title, context string, ) error {
 	pushRequest := model.PushRequest{
 		Platform: "all",
 		Audience: model.Audience{
 			RegistrationId: []string{registrationID},
 		},
+		Notification: model.Notification{
+			Android: struct {
+				Alert     string
+				Title     string
+				BuilderID int
+				Extras    struct{ Newsid int`json:"newsid"` }
+			}{Alert: title, Title: title },
+			Ios: struct {
+				Alert  string
+				Sound  string
+				Badge  string
+				Extras struct{ Newsid int`json:"newsid"` }
+			}{Alert: title },
+		},
 	}
 	return ResultSet(p.PostClient(consts.PushURL).JSON(pushRequest).Send())
 }
 
-func (p push) PushByTag(tag string, context string) error {
+func (p push) PushByTag(tag, title, context string) error {
 	pushRequest := model.PushRequest{
 		Platform: "all",
 		Audience: model.Audience{
 			Tag: []string{tag},
+		},
+		Notification: model.Notification{
+			Android: struct {
+				Alert     string
+				Title     string
+				BuilderID int
+				Extras    struct{ Newsid int`json:"newsid"` }
+			}{Alert: title, Title: title},
+			Ios: struct {
+				Alert  string
+				Sound  string
+				Badge  string
+				Extras struct{ Newsid int`json:"newsid"` }
+			}{Alert: title },
 		},
 	}
 	return ResultSet(p.PostClient(consts.PushURL).JSON(pushRequest).Send())
