@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"qiniupkg.com/x/errors.v7"
 	"encoding/json"
-	"fmt"
 )
 
 /**
