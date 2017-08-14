@@ -6,6 +6,7 @@ import (
 	"github.com/Houjingchao/JPush/v3/DeviceAPI/model"
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 //create by houjingchao on 17/08/10
@@ -77,9 +78,8 @@ func (p push) PushByRegid(registrationID, title, context string, extra model.Ext
 	} else if len(body) != 0 {
 		return errors.New(string(body))
 	}
-
 	err = json.Unmarshal(body, response)
-
+	fmt.Println(response.Sendno )
 	if response.Sendno != "0" {
 		return errors.New(response.Sendno)
 	}
