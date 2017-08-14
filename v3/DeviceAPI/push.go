@@ -4,17 +4,21 @@ import (
 	"github.com/cocotyty/httpclient"
 	"github.com/Houjingchao/JPush/v3/DeviceAPI/consts"
 	"github.com/Houjingchao/JPush/v3/DeviceAPI/model"
-	"fmt"
 	"encoding/json"
+	"errors"
 )
 
 //create by houjingchao on 17/08/10
 
+type Response struct {
+	Sendno string `json:"sendno"`
+	MsgId  string `json:"msg_id"`
+}
 type (
 	Push interface {
 		GetCids(count string) (model.CidResponse, error)
 		PushAll() error
-		PushByRegid(registrationID, title, context string,extra model.Extras) error
+		PushByRegid(registrationID, title, context string, extra model.Extras) error
 		PushByTag(tag, title, context string, extra model.Extras) error
 	}
 	push struct {
@@ -61,15 +65,25 @@ func (p push) PushByRegid(registrationID, title, context string, extra model.Ext
 				Extras:  extra,
 			},
 			Ios: model.Ios{
-				Alert:          title,
-				Extras:         extra,
+				Alert:  title,
+				Extras: extra,
 			},
 		},
 	}
-	res,_:=json.Marshal(pushRequest)
-	fmt.Println(string(res))
-	fmt.Println(consts.PushURL)
-	return ResultSet(p.PostClient(consts.PushURL).JSON(pushRequest).Send())
+	response := Response{}
+	body, err := p.PostClient(consts.PushURL).JSON(pushRequest).Send().Body()
+	if err != nil {
+		return err
+	} else if len(body) != 0 {
+		return errors.New(string(body))
+	}
+
+	err = json.Unmarshal(body, response)
+
+	if response.Sendno != "0" {
+		return errors.New(response.Sendno)
+	}
+	return nil
 }
 
 func (p push) PushByTag(tag, title, context string, extra model.Extras) error {
@@ -86,8 +100,8 @@ func (p push) PushByTag(tag, title, context string, extra model.Extras) error {
 				Extras:  extra,
 			},
 			Ios: model.Ios{
-				Alert:          title,
-				Extras:         extra,
+				Alert:  title,
+				Extras: extra,
 			},
 		},
 	}

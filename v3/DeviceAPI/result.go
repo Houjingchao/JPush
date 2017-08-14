@@ -24,7 +24,6 @@ func ResultGet(resq *httpclient.HttpResponse, dest interface{}) error {
 
 func ResultSet(resp *httpclient.HttpResponse) error {
 	body, err := resp.Body()
-	fmt.Println(body)
 	if err != nil {
 		return err
 	} else if len(body) != 0 {
