@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 //create by houjingchao on 17/08/10
@@ -73,14 +74,16 @@ func (p push) PushByRegid(registrationID, title, context string, extra model.Ext
 	}
 	response := Response{}
 	body, err := p.PostClient(consts.PushURL).JSON(pushRequest).Send().Body()
+	fmt.Println(len(body))
 	if err != nil {
 		return err
-	} else if len(body) != 0 {
+	} else if len(body) == 0 {
 		return errors.New(string(body))
 	}
+	fmt.Println("jasjdfasjfdjasdfjasjdfjasdfjasdjfajdsfjasdfdas")
 	err = json.Unmarshal(body, response)
-	fmt.Println(response.Sendno )
-	if response.Sendno != "0" {
+
+	if strings.EqualFold(response.Sendno,"0"){
 		return errors.New(response.Sendno)
 	}
 	return nil
