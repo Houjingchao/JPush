@@ -6,7 +6,6 @@ import (
 	"github.com/Houjingchao/JPush/v3/DeviceAPI/model"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -53,7 +52,7 @@ func (p push) PushAll() error {
 	return nil
 }
 
-func (p push) PushByRegid(registrationID, title, context string, extra model.Extras) error {
+func (p push) PushByRegid(registrationID, title, content string, extra model.Extras) error {
 	pushRequest := model.PushRequest{
 		Platform: "all",
 		Audience: model.Audience{
@@ -61,9 +60,9 @@ func (p push) PushByRegid(registrationID, title, context string, extra model.Ext
 		},
 		Notification: model.Notification{
 			Android: model.Android{
-				Alert:   title,
+				Alert:   content,
 				Title:   title,
-				BigText: context,
+				BigText: "",
 				Extras:  extra,
 			},
 			Ios: model.Ios{
@@ -74,16 +73,14 @@ func (p push) PushByRegid(registrationID, title, context string, extra model.Ext
 	}
 	response := Response{}
 	body, err := p.PostClient(consts.PushURL).JSON(pushRequest).Send().Body()
-	fmt.Println(len(body))
 	if err != nil {
 		return err
 	} else if len(body) == 0 {
 		return errors.New(string(body))
 	}
-	fmt.Println("jasjdfasjfdjasdfjasjdfjasdfjasdjfajdsfjasdfdas")
 	err = json.Unmarshal(body, response)
 
-	if strings.EqualFold(response.Sendno,"0"){
+	if strings.EqualFold(response.Sendno, "0") {
 		return errors.New(response.Sendno)
 	}
 	return nil
