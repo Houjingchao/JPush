@@ -61,12 +61,12 @@ func (p push) PushByRegid(registrationID, title, content string, extra model.Ext
 		Notification: model.Notification{
 			Android: model.Android{
 				Alert:   content,
-				Title:   title,
+				Title:   title+"  "+content,
 				BigText: "",
 				Extras:  extra,
 			},
 			Ios: model.Ios{
-				Alert:  title,
+				Alert:  title+"  "+content,
 				Extras: extra,
 			},
 		},
