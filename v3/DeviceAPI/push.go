@@ -71,7 +71,7 @@ func (p push) PushByRegid(registrationID, title, content string, extra model.Ext
 			},
 		},
 	}
-	response := Response{}
+	response := &Response{}
 	body, err := p.PostClient(consts.PushURL).JSON(pushRequest).Send().Body()
 	if err != nil {
 		return err
@@ -80,6 +80,9 @@ func (p push) PushByRegid(registrationID, title, content string, extra model.Ext
 	}
 	err = json.Unmarshal(body, response)
 
+	if strings.Contains(string(body),"error") {
+		return errors.New("限流了")
+	}
 	if strings.EqualFold(response.Sendno, "0") {
 		return errors.New(response.Sendno)
 	}

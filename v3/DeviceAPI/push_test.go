@@ -7,14 +7,25 @@ import (
 )
 
 func TestNewPush(t *testing.T) {
-	jp := NewJPush("appkey", "masterSecrect")
+    var b chan bool = make(chan bool)
+	for i:=0;i<30;i++{
+		go pushss()
+	}
+	<-b
+}
+
+func pushss() (){
+	jp := NewJPush("test", "test")
 	extra:=model.Extras{
 		Action:"action",
 		Collect:"collect",
 		Func:"func",
 		Url:"url",
 	}
-	// 查询设备的别名与标签
-	err:=jp.PushByRegid("regid", "test", "test", extra)
-	fmt.Println(err)
+	for i:=0;i<=900;i++ {
+		// 查询设备的别名与标签
+		fmt.Println(i)
+		err := jp.PushByRegid("test", "test", "test", extra)
+		fmt.Println(err)
+	}
 }
