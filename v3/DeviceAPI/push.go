@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+	"strconv"
 )
 
 //create by houjingchao on 17/08/10
@@ -15,6 +16,14 @@ type Response struct {
 	Sendno string `json:"sendno"`
 	MsgId  string `json:"msg_id"`
 }
+
+type JpushError struct {
+	Error struct {
+		Message string `db:"message" json:"message"`
+		Code int `db:"code" json:"code"`
+	} `db:"error" json:"error"`
+}
+
 type (
 	Push interface {
 		GetCids(count string) (model.CidResponse, error)
@@ -81,10 +90,12 @@ func (p push) PushByRegid(registrationID, title, content string, extra model.Ext
 	err = json.Unmarshal(body, response)
 
 	if strings.Contains(string(body),"error") {
-		return errors.New("限流了")
-	}
-	if strings.EqualFold(response.Sendno, "0") {
-		return errors.New(response.Sendno)
+		jpushError:=&JpushError{}
+		err=json.Unmarshal(body,jpushError)
+		if err!=nil {
+			return err
+		}
+		return errors.New(strconv.Itoa(jpushError.Error.Code))
 	}
 	return nil
 }

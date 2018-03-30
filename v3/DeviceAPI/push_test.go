@@ -7,11 +7,11 @@ import (
 )
 
 func TestNewPush(t *testing.T) {
-    var b chan bool = make(chan bool)
-	for i:=0;i<30;i++{
-		go pushss()
-	}
-	<-b
+    //var b chan bool = make(chan bool)
+	//for i:=0;i<30;i++{
+		 pushss()
+	//}
+	//<-b
 }
 
 func pushss() (){
@@ -22,10 +22,10 @@ func pushss() (){
 		Func:"func",
 		Url:"url",
 	}
-	for i:=0;i<=900;i++ {
+	//for i:=0;i<=900;i++ {
 		// 查询设备的别名与标签
-		fmt.Println(i)
+		//fmt.Println(i)
 		err := jp.PushByRegid("test", "test", "test", extra)
 		fmt.Println(err)
-	}
+	//}
 }
